@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class Level {
 	
-	public final static int CELL_SIZE = 100;
+	public final static int CELL_SIZE = 60;
 	
 	public ArrayList<Block> blocks = new ArrayList<Block>();
 	public Block[][] grid;

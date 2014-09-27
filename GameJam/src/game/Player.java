@@ -1,3 +1,9 @@
+/* BUGS
+ * 
+ * -Player sprite does not stop moving left/right after the left/right arrow keys are released
+ * -Can't jump
+ */
+
 package game;
 
 import game.display.sprites.Sprite;
@@ -11,7 +17,7 @@ import java.awt.Rectangle;
 public class Player extends BasicObject {
 	//Movement constants, in pixels/tick
 	//+Y direction is down and vice versa
-	private final double INIT_JUMP_SPEED = -10;
+	private final double INIT_JUMP_SPEED = -20;
 	private final double TERMINAL_VELOCITY = 10;
 
 	//+X direction is right and vice versa
@@ -29,8 +35,8 @@ public class Player extends BasicObject {
 
 	private boolean inAir=false;
 
-	private String keysOn; //tracks depressed keys
-						   //up, left, right
+	//tracks when up, left, and right arrow keys are pressed
+	private String keysOn;
 
 	private double yVel;
 	private double xVel;
@@ -43,7 +49,6 @@ public class Player extends BasicObject {
 		inAir = false;
 		keysOn = "";
 		yVel = xVel = 0;
-
 	}
 
 	public void act(String keys){
@@ -52,14 +57,19 @@ public class Player extends BasicObject {
 		double newx = x;
 		double newy = y;
 		//jump
+		
+		if(keys.contains("d") && !inAir) {
+			game.rotation=90;
+		}
+		
 		if(keys.contains("u") && !keysOn.contains("u") && !inAir){
 			inAir = true;
 			yVel = INIT_JUMP_SPEED;
 			System.out.println("yVel="+yVel);
 			//release jump and in air
-		}//else if(!keys.contains("u") && keysOn.contains("u") && inAir){
-			//yVel += yVel < 0 ? GRAVITY_JUMPING : GRAVITY;
-		//}
+		} else if(!keys.contains("u") && keysOn.contains("u") && inAir){
+			yVel += yVel < 0 ? GRAVITY_JUMPING : GRAVITY;
+		}
 			yVel += GRAVITY;
 		
 		//horizontal
@@ -75,23 +85,33 @@ public class Player extends BasicObject {
 		//clamp velocities
 		xVel = Math.abs(xVel) > MAX_HORIZONTAL_SPEED ? (int) Math.signum(xVel) * MAX_HORIZONTAL_SPEED : xVel;
 		yVel = yVel > TERMINAL_VELOCITY ? TERMINAL_VELOCITY : yVel;
+		
+		///xVel += (int) -Math.signum(xVel);
 
 		newx = x + xVel;
 		newy = y + yVel;
-		//System.out.println("newx=" + newx + " newy=" + newy);
+
 		//check collisions and clamp position
 		Rectangle r;
 		if((r = collide((int) newx, (int) y))!=null){
-			newx=xVel>0?r.x-1:r.x+r.getWidth()+1; 
-			//newx=xVel>0?r.x:r.x+r.getWidth(); 
+
+			//subtract width for true test case to account for width of player sprite
+			//however, this only works when approaching the box from the left
+			//width must be added coming from the right
+			newx=xVel>0?r.x-1-width:r.x+r.getWidth()+1;
+
 			xVel = 0;
 			System.out.println("TOUCH SIDE");
 		}
 		if((r = collide((int) x, (int) newy))!=null && yVel - GRAVITY != this.INIT_JUMP_SPEED) {
-			newy=yVel>0?r.y-1:r.y+getHeight()+1;
-			//newy=yVel>0?r.y:r.y+getHeight();
-			inAir=yVel>0;
+
+			//subtract height for true test case to account for height of sprite
+			//however, this only works when approaching the box from above
+			//hitting the block from below requires addition
+			newy=yVel>0?r.y-1-height:r.y+getHeight()+1;
+
 			yVel = 0;
+			inAir= yVel > 0;
 			System.out.println("TOUCH VERTICAL");
 		}
 		System.out.println("yvel="+ yVel + " inAir=" + inAir);
@@ -107,9 +127,10 @@ public class Player extends BasicObject {
 		keysOn=keys;
 		x = newx;
 		y = newy;
-		System.out.println("final x=" + x + " finaly=" + y);
+		System.out.println("final x=" + x + " final y=" + y);
 		game.main.repaint();
 	}
+
 	/**
 	* checks for collision and returns rectangle u collided with, null otherwise
 	**/
@@ -125,9 +146,16 @@ public class Player extends BasicObject {
 		}
 		return null;
 	}
+	
+	int drawX = 0, drawY = 0;
+	public void draw(Graphics g, int x, int y) {
+		drawX = x;
+		drawY = y;
+		draw(g);
+	}
 
 	@Override
 	public void draw(Graphics g) {
-		getSprite().draw((int) getAbsX(), (int) getAbsY());
+		getSprite().draw(drawX, drawY);
 	}
 }

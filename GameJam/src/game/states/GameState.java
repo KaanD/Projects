@@ -57,7 +57,9 @@ public class GameState extends State {
 				if (rotating) {
 					if (rotation == cameraTheta) {
 						cameraTheta = 0;
-						// rotate player too
+						Point m = rotate((int) me.x / Level.CELL_SIZE, (int) me.y / Level.CELL_SIZE, rotation);
+						me.x = (m.x + 1) * Level.CELL_SIZE;
+						me.y = (m.y - 1) * Level.CELL_SIZE;
 						for (int i = 0; i < activeLevel.blocks.size(); i++) {
 							Block b = activeLevel.blocks.get(i);
 							Point p = rotate(b.xCoord, b.yCoord, rotation);
@@ -115,6 +117,8 @@ public class GameState extends State {
 			s = s.concat("l");
 		}  if (e.getKeyCode() == KeyEvent.VK_RIGHT) { 
 			s = s.concat("r");
+		}  if (e.getKeyCode() == KeyEvent.VK_DOWN) { 
+			s = s.concat("d");
 		}  if (e.getKeyCode() == KeyEvent.VK_SPACE 
 				|| e.getKeyCode() == KeyEvent.VK_UP) {
 			s = s.concat("u");
@@ -136,6 +140,8 @@ public class GameState extends State {
 			s = s.replaceAll("l", "");
 		} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) { 
 			s = s.replaceAll("r", "");
+		} else if (e.getKeyCode() == KeyEvent.VK_DOWN) { 
+			s = s.replaceAll("d", "");
 		} else if (e.getKeyCode() == KeyEvent.VK_SPACE 
 				|| e.getKeyCode() == KeyEvent.VK_UP) {
 			s = s.replaceAll("u", "");
@@ -156,19 +162,6 @@ public class GameState extends State {
 			rotatedY = activeLevel.width - xCoord - 1;
 		} else if (angle > 0) {
 			rotatedX = activeLevel.height - yCoord - 1;
-			rotatedY = xCoord;
-		}
-		return new Point(rotatedX, rotatedY);
-	}
-	
-	/* angle > 0 is clockwise, angle < 0 is counter-clockwise */
-	public Point rotateCamera(int xCoord, int yCoord, double angle) {
-		int rotatedX = 0, rotatedY = 0;
-		if (angle < 0) {
-			rotatedX = yCoord;
-			rotatedY = Placeholder.GAME_WIDTH / Level.CELL_SIZE - xCoord - 1;
-		} else if (angle > 0) {
-			rotatedX = Placeholder.GAME_HEIGHT / Level.CELL_SIZE - yCoord - 1;
 			rotatedY = xCoord;
 		}
 		return new Point(rotatedX, rotatedY);
