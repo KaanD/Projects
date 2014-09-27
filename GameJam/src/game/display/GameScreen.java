@@ -54,9 +54,11 @@ public class GameScreen {
 	
 	float alpha = 0;
 	public void paint(Graphics g, boolean pause) {
+		g.setColor(new Color(200, 200, 200, 0));
+		g.fillRect(0, 0, 1000, 1000);
 		if (gameState.won) {
 			Graphics2D gd = (Graphics2D) g;
-			alpha += 0.01f;
+			alpha += 0.05f;
 			if (alpha > 1)
 				alpha = 1;
 			AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
@@ -65,6 +67,9 @@ public class GameScreen {
 			return;
 		}
 		offX = (int) (Placeholder.GAME_WIDTH / 2 - gameState.me.x);
+		if ((int) (Placeholder.GAME_HEIGHT / 2 - gameState.me.y) < 400) {
+			offY = (int) (Placeholder.GAME_HEIGHT / 2 - gameState.me.y);
+		}
 /*		for (int i = 0; i < 50; i++) {
 			g.drawLine(i * Level.CELL_SIZE, 0, i * Level.CELL_SIZE, 1000);
 		}
@@ -82,7 +87,8 @@ public class GameScreen {
 			Rectangle2D rectangle = new Rectangle((int) block.getAbsX() + offX, (int) block.getAbsY() + offY, Level.CELL_SIZE, Level.CELL_SIZE);
 			AffineTransform transform = new AffineTransform();
 			if (gameState.rotation != gameState.cameraTheta)
-				transform.rotate(Math.toRadians(0), Placeholder.GAME_WIDTH/2, Placeholder.GAME_HEIGHT/2);
+				transform.rotate(Math.toRadians(gameState.cameraTheta), 423, 470);
+			
 			Shape transformed = transform.createTransformedShape(rectangle);
 			g2.fill(transformed);
 		}
@@ -94,7 +100,29 @@ public class GameScreen {
 			g.drawImage(pauseImage, 80, 100, null);
 			g.drawImage(exitHovered ? exitToMainHover : exitToMain, 115, 255, null);
 		}
+		if (fade)
+			alpha2+=20; 
+		else
+			alpha2 -= 10;
+		if (alpha2 > 255) {
+			alpha2 = 255;
+			if (pauseCount > 0) {
+				pauseCount--;
+			} else {
+				pauseCount = 12;
+				fade = false;
+			}
+		}
+		if (alpha2 < 0) {
+			alpha2 = 0;
+			pauseCount = 10;
+		}
+		g.setColor(new Color(200, 200, 200, alpha2));
+		g.fillRect(0, 0, 1000, 1000);
 	}
+	public boolean fade = true;
+	public int alpha2 = 255;
+	public int pauseCount = 12;
 	
 	public void run() {
 		if (!paused) {

@@ -34,8 +34,8 @@ public class MenuState extends State {
 
 	@Override
 	public void click(int x, int y) {
-		// TODO Auto-generated method stub
-		
+		main.changeState(new GameState(main, Level.levels[Level.currentLevel]));
+		alive = false;
 	}
 
 	@Override

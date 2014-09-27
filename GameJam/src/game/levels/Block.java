@@ -28,13 +28,13 @@ public class Block extends BasicObject {
 	public Color getColor() {
 		switch (blockType) {
 		case 1:
-			return Color.BLACK;
+			return Color.GRAY;
 		case 10:
-			return Color.BLUE;
+			return new Color(255, 127, 127);
 		case 11:
-			return Color.GREEN;
+			return new Color(255, 0, 0);
 		}
-		return Color.BLACK;
+		return Color.GRAY;
 	}
 	
 	public static int getBlockType(String s) {

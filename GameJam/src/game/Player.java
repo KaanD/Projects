@@ -14,6 +14,14 @@ import game.states.GameState;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.io.File;
+import java.io.IOException;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class Player extends BasicObject {
 	//Movement constants, in pixels/tick
@@ -66,15 +74,15 @@ public class Player extends BasicObject {
 
 	boolean jumpDelay = false;
 	public void act(String keys){
-		if(!keys.equals(""))
-			System.out.println(keys);
 		double newx = x;
 		double newy = y;
 		//jump
 		
 		if(keys.contains("d") && yVel == 0 && !game.rotating) {
-			game.rotation = game.cameraTheta = -90;
+			game.rotation = -90;
+			game.cameraTheta = 0;
 			game.rotating = true;
+			game.gameScreen.fade = true;
 		}
 		
 		if(keys.contains("u") && !keysOn.contains("u") && !inAir){
@@ -88,6 +96,28 @@ public class Player extends BasicObject {
 			yVel = INIT_JUMP_SPEED;
 			jumpDelay = true;
 			//release jump and in air
+			AudioInputStream stream;
+			try {
+				stream = AudioSystem.getAudioInputStream(new File("./wav/jumpSound.wav"));
+				Clip music = null;
+				try {
+					music = AudioSystem.getClip();
+				} catch (LineUnavailableException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				try {
+					music.open(stream);
+				} catch (LineUnavailableException e) {
+					e.printStackTrace();
+				}
+				music.start();
+			} catch (UnsupportedAudioFileException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} else if(!keys.contains("u") && keysOn.contains("u") && inAir){
 			yVel += yVel < 0 ? GRAVITY_JUMPING : GRAVITY;
 		}
@@ -106,7 +136,6 @@ public class Player extends BasicObject {
 					animationState = 1;
 					animationDelay = System.currentTimeMillis();
 				}
-				System.out.println("On the ground");
 			} else {
 				animation = 0;
 				animationState = 0;
@@ -165,20 +194,31 @@ public class Player extends BasicObject {
 				int blockType = game.activeLevel.grid[(int) (r.getX() / Level.CELL_SIZE)]
 						[(int) (r.getY() / Level.CELL_SIZE)].getBlockType();
 				if (blockType == 11) {
-					System.out.println(" YOU WIN");
 					game.won = true;
 				}
-			}
+				
+				//rotate check
+			//	if(yVel > 0 && r != null){
+/*					int dir = (int) Math.signum(xVel);
+					//if(newx+ width/2*dir  > (xVel>0?r.x:r.x+r.getWidth()) && collide((int) newx,(int) newy) == null)
+					Rectangle me = new Rectangle( (int)newx, (int) newy, width+5, height );
+					Rectangle testleft = new Rectangle ((int) r.getX(), (int) r.getY()+2, 2,2);
+					Rectangle testright = new Rectangle ((int)(r.getX() + r.getWidth()-2), (int)r.getY() + 2, 2,2);
+					if(me.intersects(testleft)){
+						System.out.println("this is never called");
+						
+					} else if(me.intersects(testright)){
+						System.out.println("this is never called");
+						
+					}
+							
+				//}
+*/			}
 		}
 		//newx = newx + newxVel;
 		//newy = newy + newyVel;
 
-		//rotate check
-		if(yVel > 0 && r != null){
-			int dir = (int) Math.signum(xVel);
-			if(newx+ width/2*dir  > (xVel>0?r.x:r.x+r.getWidth()) && collide((int) newx,(int) newy) == null)
-					game.rotation=90*dir;
-		}
+		
 		keysOn=keys;
 		x = newx;
 		y = newy;

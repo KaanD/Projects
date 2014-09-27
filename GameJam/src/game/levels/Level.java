@@ -21,7 +21,7 @@ public class Level {
 	
 	public static Level[] levels;
 	
-	public static int currentLevel = 0;
+	public static int currentLevel = 6;
 	
 	public Level(String name) {
 		this.name = name;
@@ -38,8 +38,10 @@ public class Level {
 		File[] fs = new File("./levels/").listFiles();
 		Level[] levels = new Level[fs.length];
 		int i = 0;
-		for (File f : fs)
+		for (File f : fs) {
+			System.out.println(f.getName());
 			levels[i++] = parseLevel(f);
+		}
 		return levels;
 	}
 	

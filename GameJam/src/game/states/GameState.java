@@ -50,6 +50,7 @@ public class GameState extends State {
 			if(pause) {
 				boolean oldVal = gameScreen.exitHovered;
 				Point mouse = main.getMousePosition();
+				System.out.println(mouse.getX() + " " + mouse.getY());
 				if (mouse != null 
 						&& mouse.getX() > 145 && mouse.getX() < 660
 						&& mouse.getY() > 310 && mouse.getY() < 350) {
@@ -110,7 +111,16 @@ public class GameState extends State {
 	@Override
 	public void click(int x, int y) {
 		if (won) {
-			main.changeState(new GameState(main, Level.levels[Level.currentLevel++]));
+			System.out.println(Level.currentLevel + " " + Level.levels.length);
+			Level.currentLevel++;
+			if (Level.levels.length <= Level.currentLevel) {
+				Level.currentLevel = 0;
+				main.changeState(new MenuState(main));
+			} else {
+				main.changeState(new GameState(main, Level.levels[Level.currentLevel]));
+			}
+			won = false;
+			alive = false;
 		}
 		if (pause && x > 145 && x < 660 && y > 310 && y < 350) {
 			main.changeState(new MenuState(main));
@@ -127,6 +137,7 @@ public class GameState extends State {
 		}  if (e.getKeyCode() == KeyEvent.VK_RIGHT) { 
 			s = s.concat("r");
 		}  if (e.getKeyCode() == KeyEvent.VK_DOWN) { 
+			if (gameScreen.alpha2 <= 0)
 			s = s.concat("d");
 		}  if (e.getKeyCode() == KeyEvent.VK_SPACE 
 				|| e.getKeyCode() == KeyEvent.VK_UP) {
