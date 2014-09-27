@@ -3,8 +3,6 @@ package game;
 import game.display.GameScreen;
 import game.io.KeyboardInput;
 import game.levels.Level;
-import game.states.MenuState;
-import game.states.State;
 
 import java.applet.Applet;
 import java.awt.Color;
@@ -16,7 +14,7 @@ public class Placeholder extends Applet {
 	
 	public Level activeLevel;
 	
-	public State currentState;
+	private GameScreen gameScreen;
 
 	@Override
 	public void init() {
@@ -24,16 +22,12 @@ public class Placeholder extends Applet {
 		/* Initializing game components */
 		setSize(800, 800);
 		addKeyListener(new KeyboardInput(this));
-		addMouseListener(new MouseInput(this));
-		
-		currentState = new MenuState(this);
-		/* Starts game process, needs to be done from menu */
-		currentState.start();
+		gameScreen = new GameScreen(this);
 	}
 	
 	@Override
 	public void paint(Graphics g) {
-		currentState.paint(g);
+		gameScreen.paint(g);
 	}
 	
 	private Image dbImage; 
@@ -59,9 +53,4 @@ public class Placeholder extends Applet {
 		// draw image on the screen 
 		g.drawImage (dbImage, 0, 0, this); 
 	} 
-	
-	public void changeState(State newState) {
-		currentState = newState;
-		currentState.start();
-	}
 }
