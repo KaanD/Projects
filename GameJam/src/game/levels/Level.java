@@ -7,10 +7,11 @@ import java.util.Scanner;
 
 public class Level {
 	
-	public final static int GRID_CELL_COUNT = 40;
-	public final static int CELL_SIZE = 50;
+	public final static int CELL_SIZE = 100;
 	
 	public ArrayList<Block> blocks = new ArrayList<Block>();
+	public Block[][] grid;
+	
 	public Block goal;
 	
 	public String name;
@@ -19,6 +20,13 @@ public class Level {
 	
 	public Level(String name) {
 		this.name = name;
+	}
+	
+	public void mapToArray() {
+		grid = new Block[width][height];
+		for (Block block : blocks) {
+			grid[block.xCoord][block.yCoord] = block;
+		}
 	}
 	
 	public static Level parseLevel(File input) {
@@ -42,6 +50,7 @@ public class Level {
 				gridX = 0;
 				gridY++;
 			}
+			level.mapToArray();
 			return level;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

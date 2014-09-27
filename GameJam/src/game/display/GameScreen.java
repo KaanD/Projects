@@ -59,12 +59,13 @@ public class GameScreen {
 			Graphics2D g2 = (Graphics2D) g;
 			g.setColor(block.getColor());
 			g2.setColor(block.getColor());
-			Rectangle2D rectangle = new Rectangle(block.getAbsX(), block.getAbsY(), Level.CELL_SIZE, Level.CELL_SIZE);
+			Rectangle2D rectangle = new Rectangle((int) block.getAbsX(), (int) block.getAbsY(), Level.CELL_SIZE, Level.CELL_SIZE);
 			AffineTransform transform = new AffineTransform();
 			transform.rotate(Math.toRadians(gameState.cameraTheta), Placeholder.GAME_WIDTH/2, Placeholder.GAME_HEIGHT/2);
 			Shape transformed = transform.createTransformedShape(rectangle);
 			g2.fill(transformed);
 		}
+		gameState.me.draw(g);
 		Block goal = gameState.activeLevel.goal;
 		if (goal.getAbsX() - cameraX > Placeholder.GAME_WIDTH
 				|| goal.getAbsX() + goal.getWidth() - cameraX < 0

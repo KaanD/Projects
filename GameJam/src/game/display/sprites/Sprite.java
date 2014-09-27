@@ -16,9 +16,9 @@ public class Sprite {
 	
 	int x, y;
 
-	public Sprite(File pic, int x, int y, GameScreen canvas) {
+	public Sprite(String s, int x, int y, GameScreen canvas) {
 		try {
-			image = ImageIO.read(pic);
+			image = ImageIO.read(new File(s));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
