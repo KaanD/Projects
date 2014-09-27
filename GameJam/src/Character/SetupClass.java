@@ -23,8 +23,8 @@ public class SetupClass extends StateBasedGame{
 	
 	
 	public static void main(String[] args) throws SlickException {
-		AppGameContainer app = new AppGameContainer(new SetupClass("Dodge"));
-		app.setDisplayMode(800, 600, false);
+		AppGameContainer app = new AppGameContainer(new SetupClass("Binary"));
+		app.setDisplayMode(800, 800, false);
 		//app.setAlwaysRender(true);
 		app.setTargetFrameRate(60);
 		app.setVSync(true);
@@ -39,7 +39,6 @@ public class SetupClass extends StateBasedGame{
 		this.addState(new Stage2());
 		this.addState(new GameOverState());
 		this.addState(new WonGameState());*/
-		song = new Music("music/weliketopaarty.wav");
 	}
 
 
