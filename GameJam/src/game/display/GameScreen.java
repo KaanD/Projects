@@ -6,6 +6,7 @@ import game.levels.Block;
 import game.levels.Level;
 import game.states.GameState;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -26,6 +27,7 @@ public class GameScreen {
 	private Image pauseImage;
 	private Image exitToMain;
 	private Image exitToMainHover;
+	private Image win;
 	
 	private GameState gameState;
 	private boolean paused;
@@ -39,6 +41,7 @@ public class GameScreen {
 			pauseImage = ImageIO.read(new File("./sprites/pause.png"));
 			exitToMain = ImageIO.read(new File("./sprites/exit.png"));
 			exitToMainHover = ImageIO.read(new File("./sprites/exit2.png"));
+			win = ImageIO.read(new File("./sprites/torch.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -49,22 +52,29 @@ public class GameScreen {
 		offY = (int) (Placeholder.GAME_HEIGHT / 2 - gameState.me.y);
 	}
 	
+	float alpha = 0;
 	public void paint(Graphics g, boolean pause) {
+		if (gameState.won) {
+			Graphics2D gd = (Graphics2D) g;
+			alpha += 0.01f;
+			if (alpha > 1)
+				alpha = 1;
+			AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+			gd.setComposite(ac);
+			gd.drawImage(win, 0, 0, null);
+			return;
+		}
 		offX = (int) (Placeholder.GAME_WIDTH / 2 - gameState.me.x);
-		for (int i = 0; i < 50; i++) {
+/*		for (int i = 0; i < 50; i++) {
 			g.drawLine(i * Level.CELL_SIZE, 0, i * Level.CELL_SIZE, 1000);
 		}
 		for (int i = 0; i < 50; i++) {
 			g.drawLine(0, i * Level.CELL_SIZE, 1000, i * Level.CELL_SIZE);
-		}
+		}*/
 		while (!drawQueue.isEmpty()) {
 			drawQueue.get(drawQueue.size() - 1).draw(g);
 			drawQueue.remove(drawQueue.size() - 1);
 		}
-		if (gameState.cameraTheta > 90)
-			gameState.cameraTheta = 90;
-		if (gameState.cameraTheta < -90)
-			gameState.cameraTheta = -90;
 		for (Block block : gameState.activeLevel.blocks) {
 			Graphics2D g2 = (Graphics2D) g;
 			g.setColor(block.getColor());
@@ -72,7 +82,7 @@ public class GameScreen {
 			Rectangle2D rectangle = new Rectangle((int) block.getAbsX() + offX, (int) block.getAbsY() + offY, Level.CELL_SIZE, Level.CELL_SIZE);
 			AffineTransform transform = new AffineTransform();
 			if (gameState.rotation != gameState.cameraTheta)
-				transform.rotate(Math.toRadians(gameState.cameraTheta), Placeholder.GAME_WIDTH/2, Placeholder.GAME_HEIGHT/2);
+				transform.rotate(Math.toRadians(0), Placeholder.GAME_WIDTH/2, Placeholder.GAME_HEIGHT/2);
 			Shape transformed = transform.createTransformedShape(rectangle);
 			g2.fill(transformed);
 		}

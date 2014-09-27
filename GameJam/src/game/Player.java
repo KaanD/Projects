@@ -128,6 +128,15 @@ public class Player extends BasicObject {
 			yVel = 0;
 			inAir= yVel > 0;
 			System.out.println("TOUCH VERTICAL");
+			//check for ont op of block
+			if(yVel<=0){
+				int blockType = game.activeLevel.grid[(int) (r.getX() / Level.CELL_SIZE)]
+						[(int) (r.getY() / Level.CELL_SIZE)].getBlockType();
+				if (blockType == 11) {
+					System.out.println(" YOU WIN");
+					game.won = true;
+				}
+			}
 		}
 		System.out.println("yvel="+ yVel + " inAir=" + inAir);
 		//newx = newx + newxVel;

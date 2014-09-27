@@ -24,7 +24,8 @@ public class GameState extends State {
 	public Player me;
 	private boolean pause = false;
 	private boolean alive = true;
-	private boolean rotating = false;
+	public boolean rotating = false;
+	public boolean won = false;
 	
 	public GameState(Placeholder main) {
 		this.main = main;
@@ -61,7 +62,6 @@ public class GameState extends State {
 			} else {
 				if (rotating) {
 					if (rotation == cameraTheta) {
-						rotating = false;
 						Point m = rotate((int) me.x / Level.CELL_SIZE, (int) me.y / Level.CELL_SIZE, rotation);
 						me.x = (m.x + 1) * Level.CELL_SIZE;
 						me.y = (m.y - 1) * Level.CELL_SIZE;
@@ -74,6 +74,7 @@ public class GameState extends State {
 							b.yCoord = p.y;
 						}
 						activeLevel.mapToArray();
+						rotating = false;
 						rotation = 0;
 						cameraTheta = 0;
 						main.repaint();
@@ -108,6 +109,9 @@ public class GameState extends State {
 
 	@Override
 	public void click(int x, int y) {
+		if (won) {
+			//main.changeState(new GameState());
+		}
 		if (pause && x > 145 && x < 660 && y > 310 && y < 350) {
 			main.changeState(new MenuState(main));
 			alive = false;
@@ -131,10 +135,10 @@ public class GameState extends State {
 			pause = !pause;
 			main.repaint();
 		} else if (e.getKeyCode() == KeyEvent.VK_A) {
-			rotation -= 90;
+			rotation = cameraTheta = -90;
 			rotating = true;
 		} else if (e.getKeyCode() == KeyEvent.VK_D) {
-			rotation += 90;
+			rotation = cameraTheta = 90;
 			rotating = true;
 		}
 	}
@@ -153,10 +157,6 @@ public class GameState extends State {
 		} else if (e.getKeyCode() == KeyEvent.VK_P) {
 			
 		}
-	}
-	
-	public void rotateGame(int angle) {
-		
 	}
 	
 	/* angle > 0 is clockwise, angle < 0 is counter-clockwise */

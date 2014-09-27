@@ -30,6 +30,15 @@ public class Level {
 		}
 	}
 	
+	public static Level[] loadLevels() {
+		File[] fs = new File("./levels/").listFiles();
+		Level[] levels = new Level[fs.length];
+		for (File f : fs) {
+			
+		}
+		return levels;
+	}
+	
 	public static Level parseLevel(File input) {
 		try (Scanner s = new Scanner(input)) {
 			Level level = new Level(s.nextLine());
