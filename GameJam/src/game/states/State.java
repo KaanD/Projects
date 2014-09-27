@@ -12,5 +12,7 @@ public abstract class State extends Thread {
 	public abstract void click(int x, int y);
 	
 	public abstract void keyPressed(KeyEvent e);
+
+	public abstract void keyReleased(KeyEvent e);
 	
 }

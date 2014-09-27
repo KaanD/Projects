@@ -24,8 +24,7 @@ public class KeyboardInput implements KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
+		main.currentState.keyReleased(e);
 	}
 
 }

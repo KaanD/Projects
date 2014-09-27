@@ -1,6 +1,5 @@
 package game;
 
-import game.display.GameScreen;
 import game.io.KeyboardInput;
 import game.io.MouseInput;
 import game.levels.Level;
@@ -13,20 +12,25 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.io.File;
 
+import javax.swing.JButton;
+import javax.swing.JPanel;
+
 public class Placeholder extends Applet {
 	
-	public Level activeLevel;
 	
 	public State currentState;
+	
+	public final static int GAME_WIDTH = 800;
+	public final static int GAME_HEIGHT = 800;
 
 	@Override
 	public void init() {
-		activeLevel = Level.parseLevel(new File("./levels/1.lvl"));
 		/* Initializing game components */
-		setSize(800, 800);
+		setSize(GAME_WIDTH, GAME_HEIGHT);
 		addKeyListener(new KeyboardInput(this));
 		addMouseListener(new MouseInput(this));
 		
+		//add(canvas);
 		currentState = new MenuState(this);
 		/* Starts game process, needs to be done from menu */
 		currentState.start();
@@ -64,5 +68,6 @@ public class Placeholder extends Applet {
 	public void changeState(State newState) {
 		currentState = newState;
 		currentState.start();
+		repaint();
 	}
 }

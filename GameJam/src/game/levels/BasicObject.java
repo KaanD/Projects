@@ -29,24 +29,24 @@ public abstract class BasicObject {
       this.sprite = s;
   }
      
-    public int getX() {
+    public int getAbsX() {
         return this.x;
     }
-    public int getY() {
+    public int getAbsY() {
         return this.y;
     }
  
-    public void setX(int newX) {
+    public void setAbsX(int newX) {
         this.x = newX;
         this.collision.setLocation(newX, y);
     }
-    public void setY(int newY) {
+    public void setAbsY(int newY) {
         this.y = newY;
         this.collision.setLocation(x, newY);
     }
     public void setLocation(int newX, int newY){
-        this.setX(newX);
-        this.setY(newY);
+        this.setAbsX(newX);
+        this.setAbsY(newY);
     }
     public int getWidth(){
         return this.width;
