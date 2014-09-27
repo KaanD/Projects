@@ -30,6 +30,7 @@ public class Placeholder extends Applet {
 		addKeyListener(new KeyboardInput(this));
 		addMouseListener(new MouseInput(this));
 		
+		Level.levels = Level.loadLevels();
 		//add(canvas);
 		currentState = new MenuState(this);
 		/* Starts game process, needs to be done from menu */

@@ -27,16 +27,16 @@ public class GameState extends State {
 	public boolean rotating = false;
 	public boolean won = false;
 	
-	public GameState(Placeholder main) {
+	public GameState(Placeholder main, Level level) {
 		this.main = main;
-		activeLevel = Level.parseLevel(new File("./levels/1.lvl"));
+		activeLevel = level;
 		this.gameScreen = new GameScreen(this);
 		me = new Player(this, (int) (activeLevel.start.getAbsX() + Level.CELL_SIZE / 2), 
-				(activeLevel.start.yCoord - 1) * Level.CELL_SIZE, 48, 48, new Sprite("./sprites/char.png", 0, 0, gameScreen));
+				(activeLevel.start.yCoord - 1) * Level.CELL_SIZE, 48, 48, new Sprite("./sprites/rIdle0.png", 0, 0, gameScreen));
 	}
 	
 	public void reset() {
-		activeLevel = Level.parseLevel(new File("./levels/1.lvl"));
+		activeLevel = Level.levels[Level.currentLevel];
 	}
 	
 	public void paint(Graphics g) {
@@ -110,7 +110,7 @@ public class GameState extends State {
 	@Override
 	public void click(int x, int y) {
 		if (won) {
-			//main.changeState(new GameState());
+			main.changeState(new GameState(main, Level.levels[Level.currentLevel++]));
 		}
 		if (pause && x > 145 && x < 660 && y > 310 && y < 350) {
 			main.changeState(new MenuState(main));
@@ -135,11 +135,9 @@ public class GameState extends State {
 			pause = !pause;
 			main.repaint();
 		} else if (e.getKeyCode() == KeyEvent.VK_A) {
-			rotation = cameraTheta = -90;
-			rotating = true;
 		} else if (e.getKeyCode() == KeyEvent.VK_D) {
-			rotation = cameraTheta = 90;
-			rotating = true;
+/*			rotation = cameraTheta = 90;
+			rotating = true;*/
 		}
 	}
 

@@ -55,6 +55,7 @@ public class Player extends BasicObject {
 		yVel = xVel = 0;
 		startX = x;
 		startY = y;
+		loadSprites();
 	}
 	
 	public void reset() {
@@ -63,6 +64,7 @@ public class Player extends BasicObject {
 		yVel = xVel = 0;
 	}
 
+	boolean jumpDelay = false;
 	public void act(String keys){
 		if(!keys.equals(""))
 			System.out.println(keys);
@@ -70,29 +72,57 @@ public class Player extends BasicObject {
 		double newy = y;
 		//jump
 		
-		if(keys.contains("d") && !inAir) {
-			game.rotation=90;
+		if(keys.contains("d") && yVel == 0 && !game.rotating) {
+			game.rotation = game.cameraTheta = -90;
+			game.rotating = true;
 		}
 		
 		if(keys.contains("u") && !keysOn.contains("u") && !inAir){
+			animation = 2;
+			animationState = 0;
+			animationDelay = System.currentTimeMillis();
+			jumpDelay = false;
+		}
+		if (animation == 2 && animationState == 2 && !jumpDelay) {
 			inAir = true;
 			yVel = INIT_JUMP_SPEED;
-			System.out.println("yVel="+yVel);
+			jumpDelay = true;
 			//release jump and in air
 		} else if(!keys.contains("u") && keysOn.contains("u") && inAir){
 			yVel += yVel < 0 ? GRAVITY_JUMPING : GRAVITY;
 		}
-			yVel += GRAVITY;
+		if (yVel >= 0 && animation == 2 && animationState == 2) {
+			animationState = 3;
+			jumpDelay = false;
+		}
+		if (yVel > 0 && animation !=2) {
+			animation = 2;
+			animationState = 3;
+		}
+		if (yVel == 0 && !inAir && animation != 2) {
+			if (xVel != 0) {
+				animation = 1;
+				if (animationState == 0) {
+					animationState = 1;
+					animationDelay = System.currentTimeMillis();
+				}
+				System.out.println("On the ground");
+			} else {
+				animation = 0;
+				animationState = 0;
+			}
+		}
+		yVel += GRAVITY;
 		
 		//horizontal
 		//accel
 		if(keys.contains("l") && !keys.contains("r")){ //go left 
 			xVel -= inAir ? X_ACCEL_AIR : X_ACCEL_GROUND;
-			System.out.println("xVel="+xVel);
+			reverse = true;
 		}
 		else if(!keys.contains("l") && keys.contains("r")){ //go right
 			xVel += inAir ? X_ACCEL_AIR : X_ACCEL_GROUND;
-			System.out.println("xVel="+xVel);
+			reverse = false;
 		} else {
 			xVel -= (int) Math.signum(xVel);
 		}
@@ -115,7 +145,6 @@ public class Player extends BasicObject {
 			newx=xVel>0?r.x-1-width:r.x+r.getWidth()+1;
 
 			xVel = 0;
-			System.out.println("TOUCH SIDE");
 		}
 		if((r = collide((int) x, (int) newy))!=null && yVel - GRAVITY != this.INIT_JUMP_SPEED) {
 
@@ -127,9 +156,12 @@ public class Player extends BasicObject {
 
 			yVel = 0;
 			inAir= yVel > 0;
-			System.out.println("TOUCH VERTICAL");
 			//check for ont op of block
 			if(yVel<=0){
+				if (animation == 2 && animationState == 3) {
+					animationState = 4;
+					animationDelay = 100;
+				}
 				int blockType = game.activeLevel.grid[(int) (r.getX() / Level.CELL_SIZE)]
 						[(int) (r.getY() / Level.CELL_SIZE)].getBlockType();
 				if (blockType == 11) {
@@ -138,7 +170,6 @@ public class Player extends BasicObject {
 				}
 			}
 		}
-		System.out.println("yvel="+ yVel + " inAir=" + inAir);
 		//newx = newx + newxVel;
 		//newy = newy + newyVel;
 
@@ -158,7 +189,6 @@ public class Player extends BasicObject {
 			reset();
 			game.reset();
 		}
-		System.out.println("final x=" + x + " final y=" + y);
 		game.main.repaint();
 	}
 
@@ -171,11 +201,47 @@ public class Player extends BasicObject {
 			Rectangle bRect = new Rectangle((int) b.getAbsX(),(int) b.getAbsY(),
 					game.activeLevel.CELL_SIZE, game.activeLevel.CELL_SIZE);
 			if(me.intersects(bRect)){
-				System.out.printf("me.x=%d me.y=%d block.x=%d block.y=%d",me.x,me.y,bRect.x,bRect.y);
+				//System.out.printf("me.x=%d me.y=%d block.x=%d block.y=%d",me.x,me.y,bRect.x,bRect.y);
 				return bRect;
 			}
 		}
 		return null;
+	}
+	
+	public int animation = 0; // 0 = idle, 1 = move, 2 = jump
+	public int animationState = 0;
+	
+	public Sprite idle;
+	public Sprite[] move = new Sprite[4];
+	public Sprite[] jump = new Sprite[7];
+	
+	public void loadSprites() {
+		idle = new Sprite("./sprites/rIdle0.png", 1, 1, game.gameScreen);
+		
+		move[0] = new Sprite("./sprites/rTransition0.png", 0, 0, game.gameScreen);
+		move[1] = new Sprite("./sprites/rMove0.png", 0, 0, game.gameScreen);
+		move[2] = new Sprite("./sprites/rMove1.png", 0, 0, game.gameScreen);
+		move[3] = new Sprite("./sprites/rMove2.png", 0, 0, game.gameScreen);
+
+		jump[0] = new Sprite("./sprites/rJump0.png", 0, 0, game.gameScreen);
+		jump[1] = new Sprite("./sprites/rJump1.png", 0, 0, game.gameScreen);
+		jump[2] = new Sprite("./sprites/rJump2.png", 0, 0, game.gameScreen);
+		jump[3] = new Sprite("./sprites/rJump3.png", 0, 0, game.gameScreen);
+		jump[4] = new Sprite("./sprites/rJump4.png", 0, 0, game.gameScreen);
+		jump[5] = new Sprite("./sprites/rJump1.png", 0, 0, game.gameScreen);
+		jump[6] = new Sprite("./sprites/rJump0.png", 0, 0, game.gameScreen);
+	}
+	
+	int nextWalk;
+	
+	public Sprite getAnimationState() {
+		if (animation == 2) {
+			return jump[animationState];
+		}
+		if (animation == 1) {
+			return move[animationState];
+		}
+		return getSprite();
 	}
 	
 	int drawX = 0, drawY = 0;
@@ -184,9 +250,37 @@ public class Player extends BasicObject {
 		drawY = y;
 		draw(g);
 	}
+	
+	boolean reverse = false;
+	
+	private long animationDelay = 0;
 
 	@Override
 	public void draw(Graphics g) {
-		getSprite().draw(drawX, drawY);
+		getAnimationState().draw(drawX, drawY, reverse);
+		if (animation == 1) {
+			if (animationState == 1 && System.currentTimeMillis() - animationDelay >= 150) {
+				animationState = 2 + (nextWalk++) % 2;
+				animationDelay = System.currentTimeMillis();
+			} else if (animationState > 1 && System.currentTimeMillis() - animationDelay >= 150) {
+				animationState = 1;
+				animationDelay = System.currentTimeMillis();
+			}
+		} else if (animation == 2) {
+			if (animationState == 0 && System.currentTimeMillis() - animationDelay >= 70) {
+				animationState = 1;
+				animationDelay = System.currentTimeMillis();
+			} else if (animationState == 1 && System.currentTimeMillis() - animationDelay >= 70) {
+				animationState = 2;
+				animationDelay = System.currentTimeMillis();
+			} else if (animationState == 4 && System.currentTimeMillis() - animationDelay >= 40) {
+				animationState = 5;
+				animationDelay = System.currentTimeMillis();
+			} else if (animationState == 5 && System.currentTimeMillis() - animationDelay >= 40) {
+				animationState = 0;
+				animation = 0;
+				animationDelay = System.currentTimeMillis();
+			}
+		}
 	}
 }

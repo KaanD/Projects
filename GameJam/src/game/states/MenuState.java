@@ -2,6 +2,7 @@ package game.states;
 
 import game.Placeholder;
 import game.display.MenuScreen;
+import game.levels.Level;
 
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -41,7 +42,7 @@ public class MenuState extends State {
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 			System.out.println("Changed State");
-			main.changeState(new GameState(main));
+			main.changeState(new GameState(main, Level.levels[Level.currentLevel]));
 			alive = false;
 		}
 	}

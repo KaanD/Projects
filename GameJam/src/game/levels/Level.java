@@ -19,6 +19,10 @@ public class Level {
 	public int width;
 	public int height;
 	
+	public static Level[] levels;
+	
+	public static int currentLevel = 0;
+	
 	public Level(String name) {
 		this.name = name;
 	}
@@ -33,9 +37,9 @@ public class Level {
 	public static Level[] loadLevels() {
 		File[] fs = new File("./levels/").listFiles();
 		Level[] levels = new Level[fs.length];
-		for (File f : fs) {
-			
-		}
+		int i = 0;
+		for (File f : fs)
+			levels[i++] = parseLevel(f);
 		return levels;
 	}
 	
