@@ -12,7 +12,8 @@ public class Level {
 	public ArrayList<Block> blocks = new ArrayList<Block>();
 	public Block[][] grid;
 	
-	public Block goal;
+	public Block goal;	
+	public Block start;
 	
 	public String name;
 	public int width;
@@ -43,6 +44,8 @@ public class Level {
 					Block block = new Block(level, Block.getBlockType(element), gridX++, gridY, CELL_SIZE, CELL_SIZE);
 					if (block.getBlockType() != -1) {
 						level.blocks.add(block);
+						if (block.getBlockType() == 10)
+							level.start = block;
 						if (block.getBlockType() == 11)
 							level.goal = block;
 					}

@@ -15,7 +15,7 @@ import java.io.File;
 public class GameState extends State {
 	
 	public Placeholder main;
-	private GameScreen gameScreen;
+	public GameScreen gameScreen;
 	public Level activeLevel;
 	public int rotation, cameraTheta;
 	
@@ -30,7 +30,12 @@ public class GameState extends State {
 		this.main = main;
 		activeLevel = Level.parseLevel(new File("./levels/1.lvl"));
 		this.gameScreen = new GameScreen(this);
-		me = new Player(this, Level.CELL_SIZE / 2, 1, 48, 48, new Sprite("./sprites/char.png", 0, 0, gameScreen));
+		me = new Player(this, (int) (activeLevel.start.getAbsX() + Level.CELL_SIZE / 2), 
+				(activeLevel.start.yCoord - 1) * Level.CELL_SIZE, 48, 48, new Sprite("./sprites/char.png", 0, 0, gameScreen));
+	}
+	
+	public void reset() {
+		activeLevel = Level.parseLevel(new File("./levels/1.lvl"));
 	}
 	
 	public void paint(Graphics g) {
@@ -56,7 +61,7 @@ public class GameState extends State {
 			} else {
 				if (rotating) {
 					if (rotation == cameraTheta) {
-						cameraTheta = 0;
+						rotating = false;
 						Point m = rotate((int) me.x / Level.CELL_SIZE, (int) me.y / Level.CELL_SIZE, rotation);
 						me.x = (m.x + 1) * Level.CELL_SIZE;
 						me.y = (m.y - 1) * Level.CELL_SIZE;
@@ -70,7 +75,7 @@ public class GameState extends State {
 						}
 						activeLevel.mapToArray();
 						rotation = 0;
-						rotating = false;
+						cameraTheta = 0;
 						main.repaint();
 					}
 					if (rotation > cameraTheta) {

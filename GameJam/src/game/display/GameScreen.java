@@ -31,7 +31,7 @@ public class GameScreen {
 	private boolean paused;
 	public boolean exitHovered;
 	
-	public int cameraX, cameraY;
+	public int offX, offY;
 	
 	public GameScreen(GameState state) {
 		this.gameState = state;
@@ -44,9 +44,13 @@ public class GameScreen {
 		}
 	}
 	
+	public void center() {
+		offX = (int) (Placeholder.GAME_WIDTH / 2 - gameState.me.x);
+		offY = (int) (Placeholder.GAME_HEIGHT / 2 - gameState.me.y);
+	}
+	
 	public void paint(Graphics g, boolean pause) {
-		//cameraX = (int) (Placeholder.GAME_WIDTH / 2 - gameState.me.x);
-		//cameraY = (int) (Placeholder.GAME_HEIGHT / Level.CELL_SIZE / 2 - gameState.me.y / Level.CELL_SIZE);
+		offX = (int) (Placeholder.GAME_WIDTH / 2 - gameState.me.x);
 		for (int i = 0; i < 50; i++) {
 			g.drawLine(i * Level.CELL_SIZE, 0, i * Level.CELL_SIZE, 1000);
 		}
@@ -57,24 +61,23 @@ public class GameScreen {
 			drawQueue.get(drawQueue.size() - 1).draw(g);
 			drawQueue.remove(drawQueue.size() - 1);
 		}
+		if (gameState.cameraTheta > 90)
+			gameState.cameraTheta = 90;
+		if (gameState.cameraTheta < -90)
+			gameState.cameraTheta = -90;
 		for (Block block : gameState.activeLevel.blocks) {
 			Graphics2D g2 = (Graphics2D) g;
 			g.setColor(block.getColor());
 			g2.setColor(block.getColor());
-			Rectangle2D rectangle = new Rectangle((int) block.getAbsX() - cameraX, (int) block.getAbsY() - cameraY, Level.CELL_SIZE, Level.CELL_SIZE);
+			Rectangle2D rectangle = new Rectangle((int) block.getAbsX() + offX, (int) block.getAbsY() + offY, Level.CELL_SIZE, Level.CELL_SIZE);
 			AffineTransform transform = new AffineTransform();
-			transform.rotate(Math.toRadians(gameState.cameraTheta), Placeholder.GAME_WIDTH/2, Placeholder.GAME_HEIGHT/2);
+			if (gameState.rotation != gameState.cameraTheta)
+				transform.rotate(Math.toRadians(gameState.cameraTheta), Placeholder.GAME_WIDTH/2, Placeholder.GAME_HEIGHT/2);
 			Shape transformed = transform.createTransformedShape(rectangle);
 			g2.fill(transformed);
 		}
-		gameState.me.draw(g, (int) gameState.me.x + cameraX, (int) gameState.me.y + cameraX);
-		Block goal = gameState.activeLevel.goal;
-		if (goal.getAbsX() - cameraX > Placeholder.GAME_WIDTH
-				|| goal.getAbsX() + goal.getWidth() - cameraX < 0
-				|| goal.getAbsY() - cameraY > Placeholder.GAME_HEIGHT
-				|| goal.getAbsY() + goal.getHeight() - cameraY < 0) {
-			
-		}
+		if (gameState.rotation == 0) 
+			gameState.me.draw(g, (int) gameState.me.x + offX, (int) gameState.me.y + offY);
 		if (pause) {
 			g.setColor(new Color(0, 0 ,0, 128));
 			g.fillRect(0, 0, gameState.getWidth(), gameState.getHeight());
