@@ -2,6 +2,7 @@ package game;
 
 import game.display.GameScreen;
 import game.io.KeyboardInput;
+import game.io.MouseInput;
 import game.levels.Level;
 import game.states.MenuState;
 import game.states.State;

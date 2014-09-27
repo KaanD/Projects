@@ -7,10 +7,10 @@ import java.awt.event.KeyListener;
 
 public class KeyboardInput implements KeyListener {
 	
-	private Placeholder game;
+	private Placeholder main;
 	
 	public KeyboardInput(Placeholder game) {
-		this.game = game;
+		this.main = game;
 	}
 
 	@Override
@@ -19,16 +19,7 @@ public class KeyboardInput implements KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		System.out.println("test");
-		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-			
-		} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) { 
-			
-		} else if (e.getKeyCode() == KeyEvent.VK_SPACE 
-				|| e.getKeyCode() == KeyEvent.VK_UP) {
-			
-		}
-		game.repaint();
+		main.currentState.keyPressed(e);
 	}
 
 	@Override
